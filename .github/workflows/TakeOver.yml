@@ -1,0 +1,56 @@
+name: Subdomain Takeover Hunt
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  takeover-hunt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Tools
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y wget unzip jq git golang
+          export PATH="$HOME/.local/bin:$PATH"
+          go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest && sudo mv ~/go/bin/dnsx /usr/bin/
+          go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest && sudo mv ~/go/bin/subfinder /usr/bin/
+          go install github.com/cybercdh/assetfinder@cybercdh && sudo mv ~/go/bin/assetfinder /usr/bin/
+          # Nuclei
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/projectdiscovery/nuclei/releases/latest | jq -r '.tag_name')
+          CLEAN_VERSION=${LATEST_VERSION#v}
+          wget https://github.com/projectdiscovery/nuclei/releases/download/${LATEST_VERSION}/nuclei_${CLEAN_VERSION}_linux_amd64.zip
+          unzip -o nuclei_${CLEAN_VERSION}_linux_amd64.zip
+          sudo mv nuclei /usr/bin/
+          rm -rf nuclei* *.md
+
+      - name: Subdomain Enumeration & Takeover Scan
+        run: |
+          set -e
+          mkdir -p results
+          TARGET="squareup.com"
+
+          echo "[*] Finding subdomains..."
+          subfinder -d $TARGET -silent | assetfinder --subs-only | grep "\.${TARGET}$" | sort -u > results/subdomains.txt
+          echo "[+] Total subdomains found: $(wc -l < results/subdomains.txt)"
+
+          echo "[*] Resolving DNS..."
+          cat results/subdomains.txt | dnsx -silent -a -cname -resp -o results/subdomains-resolved.txt
+
+          echo "[*] Running nuclei takeover scan..."
+          cat results/subdomains-resolved.txt | awk '{print $1}' | sort -u | nuclei \
+            -t takeovers/ \
+            -o results/takeover-findings.txt
+
+      - name: Commit & Push Results
+        run: |
+          git config --global user.email "${{ secrets.EMAIL_ADDRESS }}"
+          git config --global user.name "${{ secrets.USER_NAME }}"
+          git add results/
+          git commit -m "🏴‍☠️ Takeover Hunt Update" --no-verify || echo "No changes"
+          git push
