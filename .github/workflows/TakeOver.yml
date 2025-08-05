@@ -40,12 +40,19 @@ jobs:
           echo "[+] Total subdomains found: $(wc -l < results/subdomains.txt)"
 
           echo "[*] Resolving DNS..."
-          cat results/subdomains.txt | dnsx -silent -a -cname -resp -o results/subdomains-resolved.txt
+          cat results/subdomains.txt | dnsx -silent -nc -a -cname -resp -o results/subdomains-resolved.txt
 
           echo "[*] Running nuclei takeover scan..."
-          cat results/subdomains-resolved.txt | awk '{print $1}' | sort -u | nuclei \
-            -t takeovers/ \
-            -o results/takeover-findings.txt
+          cat results/subdomains-resolved.txt | awk '{print $1}' | sort -u | nuclei -as -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" \
+            -rl 300 -c 100 \
+            -retries 3 -timeout 15 \
+            -stats -si 10 \
+            -sresp \
+            -t dns/ \
+            -t cves/ \
+            -t misconfiguration/ \
+            -t exposures/ \
+            -o results/live-urls-$(date +%F).txt
 
       - name: Commit & Push Results
         run: |
