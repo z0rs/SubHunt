@@ -633,9 +633,6 @@ edge.www--7.pad.squareup.com
 edge.www9-9.pad.squareup.com
 edge01.mtv.squareup.com
 edge02.mtv.squareup.com
-edgecanary-blue.squareup.com
-edgecanary-green.squareup.com
-edgecanary.squareup.com
 edgewww-9-9.pad.squareup.com
 edgewww3-5.pad.squareup.com
 edgewww9-4.pad.squareup.com
@@ -758,7 +755,6 @@ explorer-gateway.squareup.com
 external.vpn.corp.squareup.com
 f501.lab.sfo.squareup.com
 f502.lab.sfo.squareup.com
-fallback.community.squareup.com
 family-13.pad.squareup.com
 family-frontpage.pad.squareup.com
 family-na.pad.squareup.com
@@ -808,7 +804,6 @@ ftps.p.iad1.squareup.com
 ftps.p.sjc1.squareup.com
 ftps.p.sjc1b.squareup.com
 ftps.p.squareup.com
-fulfillment-ups.squareup.com
 fulfillment.squareup.com
 fw-francetv.motscroises.pad.squareup.com
 fw-www0-2.pad.squareup.com
@@ -2351,7 +2346,6 @@ webapp-www-73.pad.squareup.com
 webapp-www9-3.pad.squareup.com
 webapp.android-www.pad.squareup.com
 webappnemokid.pad.squareup.com
-webinars.squareup.com
 webwww-21.pad.squareup.com
 webwww-34.pad.squareup.com
 webwww-9-1.pad.squareup.com
@@ -3278,19 +3272,9 @@ www-stage.pad.squareup.com
 www-test1.broadway.squareup.com
 www-vpn.pad.squareup.com
 www-vpn.www1-2.pad.squareup.com
-www.acs.squareup.com
-www.community.squareup.com
-www.ftps.p.squareup.com
-www.imap.squareup.com
-www.microlearning.squareup.com
-www.mta-in.sip.sjc1.squareup.com
-www.mta-in.stage.sip.sjc1.squareup.com
-www.mx1.sjc1.squareup.com
-www.mx1.stage.sjc1.squareup.com
 www.mx2.sjc1.squareup.com
-www.mx2.stage.sjc1.squareup.com
-www.ocrcard-staging-connect.squareup.com
 www.squareup.com
+www.store.squareup.com
 www0-1backend.pad.squareup.com
 www0-1trial.pad.squareup.com
 www0-2.billing.pad.squareup.com
