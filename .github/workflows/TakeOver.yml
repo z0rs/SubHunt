@@ -33,26 +33,32 @@ jobs:
         run: |
           set -e
           mkdir -p results
-          TARGET="t-mobile.com"
+          TARGET="unimelb.edu.au"
 
           echo "[*] Finding subdomains..."
-          subfinder -d $TARGET -silent | assetfinder --subs-only | grep "\.${TARGET}$" | sort -u > results/mobile.txt
-          echo "[+] Total subdomains found: $(wc -l < results/mobile.txt)"
+          subfinder -d $TARGET -silent | assetfinder --subs-only | grep "\.${TARGET}$" | sort -u > results/unimelb.txt
+          echo "[+] Total subdomains found: $(wc -l < results/unimelb.txt)"
 
           echo "[*] Resolving DNS..."
-          cat results/mobile.txt | dnsx -silent -nc -a -cname -resp -o results/mobile-resolved.txt
+          cat results/unimelb.txt | dnsx -silent -nc -a -cname -resp -o results/unimelb-resolved.txt
 
           echo "[*] Running nuclei takeover scan..."
-          cat results/mobile-resolved.txt | awk '{print $1}' | sort -u | nuclei -as -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" \
-            -rl 300 -c 100 \
-            -retries 3 -timeout 15 \
+          cat results/unimelb-resolved.txt | awk '{print $1}' | sort -u | nuclei \
+            -as \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" \
+            -rl 200 \
+            -c 50 \
+            -bs 50 \
+            -timeout 10 \
+            -retries 2 \
+            -mhe 20 \
+            -stream \
+            -silent \
             -stats -si 10 \
             -sresp \
-            -t dns/ \
-            -t cves/ \
-            -t misconfiguration/ \
-            -t exposures/ \
-            -o results/mobile-live-urls-$(date +%F).txt
+            -severity medium,high,critical \
+            -t cves/,dns/,http/ \
+            -o results/unimelb-fastscan-$(date +%F).txt
 
       - name: Commit & Push Results
         run: |
